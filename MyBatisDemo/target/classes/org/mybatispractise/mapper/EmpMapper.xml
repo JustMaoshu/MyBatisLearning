@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mybatispractise.mapper.EmpMapper">
+
+    <resultMap id="empResultMap" type="emp"><!--type是指定下面与表映射的类(实体类类型)-->
+        <!--id用来设置主键-->
+        <id property="eid" column="eid"/>
+        <!--result用来设置其他属性对应的字段-->
+        <result property="name" column="emp_name"/>
+        <!--用了resultMap最好全部设置，即使属性和字段名一致。不设置虽然不会报错，但可读性很低让人疑惑-->
+        <result property="age" column="age"/>
+        <result property="sex" column="sex"/>
+        <result property="email" column="email"/>
+        <result property="did" column="did"/>
+    </resultMap>
+
+    <resultMap id="empAndDeptResultMap" type="emp">
+        <id property="eid" column="eid"/>
+        <result property="name" column="emp_name"/>
+        <result property="age" column="age"/>
+        <result property="sex" column="sex"/>
+        <result property="email" column="email"/>
+        <result property="did" column="did"/>
+<!--        <result property="dept.did" column="did"/>-->
+<!--        <result property="dept.name" column="dept_name"/>-->
+        <!--处理多对一的映射关系-->
+        <!--property:需要处理的属性名   javaType:该属性的类型-->
+        <association property="dept" javaType="dept">
+            <!--根据javaType指定的类型，获取该类型的属性，下面指定该类型的属性与字段的对应关系-->
+            <id property="did" column="did"/>
+            <result property="name" column="dept_name"/>
+        </association>
+    </resultMap>
+
+    <!--字段名和属性名不一致，要通过resultMap设置对应关系-->
+    <select id="queryAllEmp" resultMap="empResultMap">
+        select * from t_emp;
+    </select>
+
+    <select id="queryEmpAndDept" resultMap="empAndDeptResultMap">
+        select * from t_emp left join t_dept on t_emp.did=t_dept.did where t_emp.eid = #{eid}
+    </select>
+
+    <resultMap id="queryEmpAndDeptStep" type="emp">
+        <id property="eid" column="eid"/>
+        <result property="name" column="emp_name"/>
+        <result property="age" column="age"/>
+        <result property="sex" column="sex"/>
+        <result property="email" column="email"/>
+        <result property="did" column="did"/>
+        <!--下面的column是分步查询的条件-->
+        <!--注意一个select的id只在一个mapper.xml文件里唯一，这里要用select的唯一标识，那么应该是namespace+sqlId-->
+        <!--fetchType用来设置是延迟加载还是立即加载，比全局设置强（延迟加载可控）-->
+        <!--用fetchType设置单次关联对象是否延迟加载，较为灵活-->
+        <association property="dept" select="org.mybatispractise.mapper.DeptMapper.queryDeptByDid"
+                     column="did" fetchType="eager"/>
+    </resultMap>
+    <select id="queryEmpAndDeptByStep1" resultMap="queryEmpAndDeptStep">
+        select * from t_emp where eid = #{eid}
+    </select>
+    <select id="queryEmpsByDid" resultMap="empResultMap">
+        select * from t_emp where did=#{did}
+    </select>
+
+</mapper>

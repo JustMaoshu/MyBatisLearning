@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--约束，DOCTYPE后跟根标签，所以根标签为configuration-->
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--引入properties文件，避免连接配置变更后直接更改代码，下面的jdbc.driver引用peoperties文件中的变量-->
+    <!--此外需要注意，配置文件中的标签是有顺序的，要按照：
+    properties?,settings?,typeAliases?,typeHandlers?,
+    objectFactory?,objectWrapperFactory?,reflectorFactory?,
+    plugins?,environments?,databaseIdProvider?,mappers?
+    的这个顺序来配置，否则报错
+    -->
+    <properties resource="jdbc.properties"/>
+    <!--    <settings>-->
+    <!--        &lt;!&ndash;开启延迟加载&ndash;&gt;-->
+    <!--        <setting name="lazyLoadingEnabled" value="true"/>-->
+    <!--    </settings>-->
+
+    <typeAliases>
+        <!--typeAliases用来设置类型别名，这样在resultType中会友好一些，避免重复写长路径
+            类型别名不区分大小写
+            alias可以省略，缺省值为类名且不区分大小写（但不建议）
+        -->
+        <typeAlias alias="LinkedHashMap" type="java.util.LinkedHashMap" />
+        <typeAlias alias="ArrayList" type="java.util.ArrayList" />
+        <typeAlias alias="LinkedList" type="java.util.LinkedList" />
+        <!--        <typeAlias alias="User" type="org.mybatispractise.pojo.User"/>-->
+        <!--package:以包为单位，将包下所有的类型设置默认的类型别名，即类名。较为常用，方便。☆☆☆批量操作-->
+        <package name="com.sumail.mybatis.pojo"/>
+    </typeAliases>
+    <plugins>
+        <!--设置分页插件-->
+        <plugin interceptor="com.github.pagehelper.PageInterceptor"></plugin>
+    </plugins>
+    <environments default="development">
+        <!--
+            environments:配置多个连接数据库的环境
+            default:默认使用的一个环境id，比如有多个数据库（开发库、测试库），同一时间只能使用一个环境
+        -->
+        <environment id="development">
+            <!--
+                environment:配置某个具体环境，其中id是唯一标识
+            -->
+            <transactionManager type="JDBC">
+                <!--
+                    transaction:交易、业务、办理。Java中意指事务。
+                    事务管理方式，此处为JDBC，还有一种是MANAGED，区别是
+                    JDBC：使用原生事务管理方式，事务提交、回滚机制要手动处理，
+                    MANAGED：被管理，例如被Spring管理，用AOP进行事务管理
+                -->
+                <property name="skipSetAutoCommitOnClose" value="true"/>
+            </transactionManager>
+            <dataSource type="POOLED">
+                <!--
+                    type="POOLED|UNPOOLED|JNDI"
+                    POOLED:使用数据库连接池缓存数据库连接
+                    UNPOOLED:不使用数据库连接池
+                    JNDI:使用上下文中的数据源，例如Spring管理数据源
+                -->
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <!--引入映射文件-->
+    <mappers>
+        <!--        <mapper resource="mappers/UserMapper.xml"/>-->
+        <!--☆☆☆批量操作
+            需要注意以包为单位引入映射文件有要求：
+            1、mapper接口所在的包要和xml文件所在的包（目录）一致
+            2、mapper接口要和映射文件名一致
+            以外注意resource下创建Directory和java下创建package不一样，resource下是路径，创建要用/，使用最好也是/
+            这点不必太过在意，主要还是明白mapper接口和xml文件的对应关系如何确定：通过namespace=全类名确定接口<->xml<->表，
+            通过id=方法名确定方法<->sql语句<->行
+        -->
+        <package name="com/sumail/mybatis/mapper"/>
+    </mappers>
+</configuration>

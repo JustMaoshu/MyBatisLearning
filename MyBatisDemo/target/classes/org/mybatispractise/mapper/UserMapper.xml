@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mybatispractise.mapper.UserMapper">
+
+    <insert id="insertUser">
+        insert into user values('wangmazi','mazi',45);
+    </insert>
+
+    <insert id="insertUser2">
+        insert into user values(#{username},#{password},#{age});
+    </insert>
+
+    <insert id="insertUserByBo" parameterType="org.mybatispractise.pojo.UserBo">
+        insert into user values(#{username},#{password},null);
+    </insert>
+
+    <update id="updateUser">
+        update user set password='xinmazi' where username='wangmazi'
+    </update>
+
+    <delete id="deleteUser">
+        delete from user where username='wangmazi';
+    </delete>
+
+
+
+    <!--resultType是结果类型，resultMap是结果映射。resultType虽然一定要配置，但似乎多余，因为返回结果类型在mapper接口中
+    已经定义了；resultMap是为了解决属性和字段不一致的问题。-->
+    <!--resultType:默认映射属性和字段    resultMap:自定义映射属性和字段-->
+    <!--${}本质是参数拼接，如果参数是字符串或者日期要加单引号
+        #{}本质是占位符赋值，不用加单引号，且占位符赋值一定程度上可以避免sql注入，故推荐#，除非必要不用$
+    -->
+    <select id="queryUserByUsername" resultType="User">
+        <!--select * from user where username='${username}'-->
+        select * from user where username=#{username};
+    </select>
+
+    <select id="queryAllUsers" resultType="User">
+        select * from user;
+    </select>
+
+    <select id="queryUserByPasswordAndAge" resultType="User">
+        select * from user where password=#{arg0} and age=#{arg1};
+    </select>
+
+    <select id="checkLogin" resultType="User">
+        select * from user where username=#{param1} and password=#{param2};
+    </select>
+
+    <select id="checkLoginByMap" resultType="User">
+        select * from user where username=#{username} and password=#{password};
+    </select>
+
+    <select id="checkLoginByParam" resultType="User">
+        select * from user where username=#{testUsername} and password=#{param2};
+    </select>
+
+</mapper>

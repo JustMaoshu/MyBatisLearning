@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mybatispractise.mapper.DeptMapper">
+
+    <resultMap id="query" type="dept">
+        <id property="did" column="did"/>
+        <result property="name" column="dept_name"/>
+    </resultMap>
+
+    <select id="queryDeptByDid" resultMap="query">
+        select * from t_dept where did = #{did}
+    </select>
+
+    <resultMap id="deptAndEmpResultMap" type="dept">
+        <id property="did"  column="did"/>
+        <result property="name" column="dept_name"/>
+        <collection property="empList" ofType="emp">
+            <id property="eid"  column="eid"/>
+            <result property="name" column="emp_name"/>
+            <result property="sex"  column="sex"/>
+            <result property="email" column="email"/>
+            <result property="age"  column="age"/>
+        </collection>
+    </resultMap>
+    <select id="queryDeptAndEmp" resultMap="deptAndEmpResultMap">
+        select * from t_dept left join t_emp on t_dept.did=t_emp.did where t_dept.did=#{did}
+    </select>
+
+    <resultMap id="queryDeptAndEmpStep" type="dept">
+        <id property="did"  column="did"/>
+        <result property="name" column="dept_name"/>
+        <collection property="empList" select="org.mybatispractise.mapper.EmpMapper.queryEmpsByDid"
+                    column="did" fetchType="lazy"/>
+    </resultMap>
+    <select id="queryDeptAndEmpStep1" resultMap="queryDeptAndEmpStep">
+        select * from t_dept where did=#{did}
+    </select>
+</mapper>

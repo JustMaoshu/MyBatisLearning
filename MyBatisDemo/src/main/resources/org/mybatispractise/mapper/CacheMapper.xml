@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mybatispractise.mapper.CacheMapper">
+
+    <!--通过一个cache标签开启二级缓存-->
+    <!--eviction="LRU|FIFO|SOFT|WEAK" 缓存回收策略-->
+    <!--size 引用数目，最多可以存储多少个对象-->
+    <!--readOnly 是否只读，如果是true则只读缓存（只能读），直接返回原对象，调用者不能写；
+    false则是读写缓存（随便读写），返回的是原对象的拷贝。默认是false。
+    只读缓存性能高，读写缓存安全性高。-->
+    <!--type 设置使用哪个二级缓存，如果使用默认则不用配置，如果使用第三方缓存需要在此配置-->
+    <cache eviction="LRU" size="20" readOnly="true"/>
+
+    <select id="queryEmpByEid" resultType="org.mybatispractise.pojo.Emp">
+        select * from t_emp where eid = #{eid}
+    </select>
+</mapper>
