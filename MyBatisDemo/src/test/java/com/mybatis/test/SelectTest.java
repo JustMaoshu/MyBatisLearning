@@ -32,6 +32,7 @@ public class SelectTest {
      * 5、查询多条数据为map集合
      *      a>查询结果映射为List<Map<String,Object>>，每个map保存一行数据，resultType为map
      *      b>查询结果映射为Map<String,Object>，每个Object保存一行数据，其中键为表主键，值为实体类对象，resultType为map
+     *      此时要设置主键对应的属性是哪个，主键对应的属性作为map的键，用@MapKey设置
      * 上述4、5主要适用于多表查询返回查询结果，没有对应实体类对象时就用map存储
      */
     @Test
